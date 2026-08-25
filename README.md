@@ -30,3 +30,4 @@ provider — the key is only ever read server-side in `src/app/api/extract/route
 The original static-HTML version is kept under `legacy/` for reference.
 # A2_generator
 # a2
+# A2_generator
