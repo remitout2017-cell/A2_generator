@@ -3,16 +3,17 @@ import { NextRequest, NextResponse } from "next/server";
 // Route handler: receives document content from the A2 filler page, calls
 // Google Gemini with the API key held server-side, returns the extracted JSON.
 // The API key is NEVER sent to the browser.
+//
+// Files arrive as multipart/form-data (raw bytes) rather than base64-in-JSON —
+// base64 inflates payload size by ~33%, which was enough to push a couple of
+// scanned ID PDFs (e.g. a PAN card + Aadhaar card) over Vercel's 4.5MB request
+// body limit and fail with FUNCTION_PAYLOAD_TOO_LARGE before the model ever
+// saw them. Base64 is only applied here, server-side, for the outbound call
+// to Gemini, which isn't subject to that inbound limit.
 
 export const maxDuration = 60;
 
 const GEMINI_MODEL = "gemini-2.5-flash";
-
-interface ContentBlock {
-  type: "document" | "image" | "text";
-  text?: string;
-  source?: { type: "base64"; media_type: string; data: string };
-}
 
 type GeminiPart = { text: string } | { inlineData: { mimeType: string; data: string } };
 
@@ -23,16 +24,26 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const body = await req.json().catch(() => null);
-    const content = body?.content as ContentBlock[] | undefined;
-    if (!content || !Array.isArray(content)) {
-      return NextResponse.json({ error: "Expected { content: [...] }" }, { status: 400 });
+    const form = await req.formData().catch(() => null);
+    if (!form) {
+      return NextResponse.json({ error: "Expected multipart/form-data" }, { status: 400 });
     }
 
-    const parts: GeminiPart[] = content.map((block) => {
-      if (block.type === "text") return { text: block.text || "" };
-      return { inlineData: { mimeType: block.source!.media_type, data: block.source!.data } };
-    });
+    const files = form.getAll("files").filter((f): f is File => f instanceof File);
+    const pastedText = (form.get("pastedText") as string) || "";
+    const prompt = (form.get("prompt") as string) || "";
+
+    const parts: GeminiPart[] = [];
+    for (const f of files) {
+      const buf = await f.arrayBuffer();
+      const data = Buffer.from(buf).toString("base64");
+      const mimeType = f.type || (f.name.toLowerCase().endsWith(".pdf") ? "application/pdf" : "image/jpeg");
+      parts.push({ inlineData: { mimeType, data } });
+    }
+    if (pastedText.trim()) {
+      parts.push({ text: "Pasted document text:\n" + pastedText.trim() });
+    }
+    parts.push({ text: prompt });
 
     const upstream = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,

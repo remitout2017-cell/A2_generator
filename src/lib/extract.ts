@@ -1,40 +1,18 @@
-type MessageContent =
-  | { type: "document"; source: { type: "base64"; media_type: string; data: string } }
-  | { type: "image"; source: { type: "base64"; media_type: string; data: string } }
-  | { type: "text"; text: string };
-
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve((r.result as string).split(",")[1]);
-    r.onerror = reject;
-    r.readAsDataURL(file);
-  });
-}
-
 export async function extractDetails(
   files: File[],
   promptText: string,
   pastedText: string
 ): Promise<Record<string, string>> {
-  const content: MessageContent[] = [];
-  for (const f of files) {
-    const b64 = await fileToBase64(f);
-    if (f.type === "application/pdf") {
-      content.push({ type: "document", source: { type: "base64", media_type: "application/pdf", data: b64 } });
-    } else {
-      content.push({ type: "image", source: { type: "base64", media_type: f.type || "image/jpeg", data: b64 } });
-    }
-  }
+  const fd = new FormData();
+  files.forEach((f) => fd.append("files", f, f.name));
   if (pastedText && pastedText.trim()) {
-    content.push({ type: "text", text: "Pasted document text:\n" + pastedText.trim() });
+    fd.append("pastedText", pastedText.trim());
   }
-  content.push({ type: "text", text: promptText });
+  fd.append("prompt", promptText);
 
   const fetchPromise = fetch("/api/extract", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ content }),
+    body: fd,
   });
   const timeoutPromise = new Promise<never>((_, reject) => {
     setTimeout(() => reject(new Error("Request timed out after 45s.")), 45000);

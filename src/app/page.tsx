@@ -47,10 +47,15 @@ export default function Home() {
       const schema = ["applicantName", "applicantAddress", "pan", "relationship"];
       const parsed = await extractDetails(
         senderFiles,
-        `This is the ID document (PAN card / passport) of a person sending money abroad for a student's education — ` +
-          `either the student themselves or a parent/relative sending on the student's behalf. ` +
+        `This is the ID document(s) — any of PAN card, Aadhaar card, or passport, possibly more than one for the same ` +
+          `person — of a person sending money abroad for a student's education — either the student themselves or a ` +
+          `parent/relative sending on the student's behalf. If both a PAN card and an Aadhaar card are provided, combine ` +
+          `them: take the name and PAN from the PAN card, and use the Aadhaar card's printed address for "applicantAddress" ` +
+          `since PAN cards don't carry an address. Aadhaar cards may be a folded multi-panel scan — the address block is ` +
+          `usually near the top, next to "To" / enrollment number, and the photo/12-digit Aadhaar number panel is separate. ` +
           `Extract a flat JSON object with exactly these keys: ${JSON.stringify(schema)}. ` +
-          `"applicantName" = full name on the ID. "pan" = PAN number if visible. "applicantAddress" = address if visible. ` +
+          `"applicantName" = full name on the ID. "pan" = PAN number if visible. "applicantAddress" = full postal address ` +
+          `if visible on any of the documents (Aadhaar is the most likely source). ` +
           `"relationship" = "Student (Self)" if this document belongs to the student, or the relation to the student if it's ` +
           `a family member's document and that's stated/inferable (e.g. "Father", "Mother") — otherwise leave "". ` +
           `The image may be scanned or photographed sideways or upside-down (rotated 90°, 180°, or 270°) — mentally ` +
@@ -237,7 +242,7 @@ export default function Home() {
       {step === 1 && (
         <UploadCard
           stepTitle="1. Who's sending the money?"
-          subtitle="Upload the sender's PAN card (and passport, if handy). The sender could be the student, or a parent/relative remitting on their behalf — either is fine."
+          subtitle="Upload the sender's PAN card and Aadhaar card (or passport, if handy). The sender could be the student, or a parent/relative remitting on their behalf — either is fine."
           files={senderFiles}
           onFilesChange={setSenderFiles}
           pastedText={pastedText1}
