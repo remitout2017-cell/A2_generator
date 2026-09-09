@@ -56,6 +56,12 @@ export default function Home() {
           `Extract a flat JSON object with exactly these keys: ${JSON.stringify(schema)}. ` +
           `"applicantName" = full name on the ID. "pan" = PAN number if visible. "applicantAddress" = full postal address ` +
           `if visible on any of the documents (Aadhaar is the most likely source). ` +
+          `CRITICAL for "applicantAddress": transcribe ONLY the exact text printed on the document — every line item ` +
+          `(care-of, building/house name, street/cross/road, locality/nagar, city/VTC, post office, sub-district, ` +
+          `district, state, PIN) must be copied character-for-character from what is actually visible. Do NOT invent, ` +
+          `guess, autocomplete, or substitute a locality/street/PIN-area name that seems plausible for that PIN code — ` +
+          `if a line is blurry or unreadable, omit it rather than filling in a plausible-sounding replacement. Every ` +
+          `word you output for this field must be traceable to visible printed text in the image. ` +
           `"relationship" = "Student (Self)" if this document belongs to the student, or the relation to the student if it's ` +
           `a family member's document and that's stated/inferable (e.g. "Father", "Mother") — otherwise leave "". ` +
           `The image may be scanned or photographed sideways or upside-down (rotated 90°, 180°, or 270°) — mentally ` +
