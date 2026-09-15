@@ -64,8 +64,10 @@ export default function Home() {
           `word you output for this field must be traceable to visible printed text in the image. ` +
           `"relationship" = "Student (Self)" if this document belongs to the student, or the relation to the student if it's ` +
           `a family member's document and that's stated/inferable (e.g. "Father", "Mother") — otherwise leave "". ` +
-          `The image may be scanned or photographed sideways or upside-down (rotated 90°, 180°, or 270°) — mentally ` +
-          `rotate it upright before reading, and extract the text correctly regardless of its orientation in the file. ` +
+          `The image may be scanned or photographed sideways, upside-down (rotated 90°, 180°, or 270°), or crooked/tilted ` +
+          `at an arbitrary angle (e.g. a handheld photo of the card at a slant, not aligned to the frame) — mentally ` +
+          `rotate and straighten it before reading, and extract every field (including "pan") correctly regardless of ` +
+          `its orientation or skew in the file. ` +
           `Use "" for anything not found. Respond with ONLY the raw JSON object, no markdown fences, no commentary.`,
         pastedText1
       );
@@ -141,9 +143,10 @@ export default function Home() {
           `"amount" = the specific amount to be paid if a number is given, with currency — if the amount varies per student and no ` +
           `figure is stated anywhere, leave "". ` +
           `Fill in every key you can find evidence for anywhere across the documents provided; only use "" for a key that ` +
-          `truly has no supporting information in any of them. Any page/image may be scanned or photographed sideways or ` +
-          `upside-down (rotated 90°, 180°, or 270°) — mentally rotate it upright before reading, and extract the text ` +
-          `correctly regardless of its orientation in the file. Respond with ONLY the raw JSON object, no markdown fences, no commentary.`,
+          `truly has no supporting information in any of them. Any page/image may be scanned or photographed sideways, ` +
+          `upside-down (rotated 90°, 180°, or 270°), or crooked/tilted at an arbitrary angle (e.g. a handheld photo of the ` +
+          `document at a slant) — mentally rotate and straighten it before reading, and extract the text correctly ` +
+          `regardless of its orientation or skew in the file. Respond with ONLY the raw JSON object, no markdown fences, no commentary.`,
         pastedText2
       );
 
