@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function FileDropZone({
   files,
@@ -13,6 +13,18 @@ export function FileDropZone({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
+  const [previewFile, setPreviewFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!previewFile) {
+      setPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(previewFile);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [previewFile]);
 
   return (
     <div>
@@ -62,7 +74,14 @@ export function FileDropZone({
         <div className="mt-3 flex flex-col gap-1.5">
           {files.map((f, i) => (
             <div key={i} className="glass-panel flex items-center justify-between gap-3 px-3.5 py-2.5 text-xs">
-              <span className="overflow-hidden text-ellipsis whitespace-nowrap text-cream/90">{f.name}</span>
+              <button
+                type="button"
+                className="overflow-hidden text-ellipsis whitespace-nowrap text-cream/90 bg-transparent border-none p-0 cursor-pointer text-left hover:text-orange hover:underline transition-colors duration-150"
+                onClick={() => setPreviewFile(f)}
+                title={`Preview ${f.name}`}
+              >
+                {f.name}
+              </button>
               <button
                 type="button"
                 aria-label={`Remove ${f.name}`}
@@ -73,6 +92,40 @@ export function FileDropZone({
               </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {previewFile && previewUrl && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6"
+          onClick={() => setPreviewFile(null)}
+        >
+          <div
+            className="glass-card relative w-full max-w-3xl max-h-[85vh] flex flex-col p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <span className="text-[13px] text-cream/90 overflow-hidden text-ellipsis whitespace-nowrap">{previewFile.name}</span>
+              <button
+                type="button"
+                aria-label="Close preview"
+                className="shrink-0 bg-transparent border-none text-cream-dim hover:text-orange cursor-pointer font-mono text-base leading-none transition-colors duration-150"
+                onClick={() => setPreviewFile(null)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto flex items-center justify-center">
+              {previewFile.type === "application/pdf" ? (
+                <iframe src={previewUrl} title={previewFile.name} className="w-full h-[75vh] border-none rounded" />
+              ) : previewFile.type.startsWith("image/") ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={previewUrl} alt={previewFile.name} className="max-w-full max-h-[75vh] object-contain rounded" />
+              ) : (
+                <p className="text-cream-dim text-xs">Preview not available for this file type.</p>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
