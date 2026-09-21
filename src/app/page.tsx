@@ -51,8 +51,22 @@ export default function Home() {
           `person — of a person sending money abroad for a student's education — either the student themselves or a ` +
           `parent/relative sending on the student's behalf. If both a PAN card and an Aadhaar card are provided, combine ` +
           `them: take the name and PAN from the PAN card, and use the Aadhaar card's printed address for "applicantAddress" ` +
-          `since PAN cards don't carry an address. Aadhaar cards may be a folded multi-panel scan — the address block is ` +
-          `usually near the top, next to "To" / enrollment number, and the photo/12-digit Aadhaar number panel is separate. ` +
+          `since PAN cards don't carry an address. AADHAAR LAYOUT: a PVC/plastic or paper Aadhaar is usually scanned as two images (front and back), often ` +
+          `rotated 90° — rotate it upright first. FRONT: emblem, "Government of India"/"भारत सरकार", then the holder's name ` +
+          `printed TWICE — first in a regional script (Hindi/Marathi/etc.), then in English directly below it — followed by ` +
+          `"DOB"/"जन्म तारीख", gender, and the 12-digit number. BACK: "Unique Identification Authority of India", a QR code, ` +
+          `and the address printed TWICE — first a regional-language block starting "पत्ता:" (or similar), then an English block ` +
+          `starting "Address:". For "applicantName" use ONLY the ENGLISH (Latin-script) name line on the front, exactly as ` +
+          `spelled (keep apostrophes and capitalisation, e.g. "Anil Melvine Maurice D'Cunha"); never transliterate the regional ` +
+          `script and never include DOB, gender, "S/O", "C/O" or the word "Address". For "applicantAddress" use ONLY the ENGLISH ` +
+          `block after "Address:" — ignore the regional-script block, QR code, "Details as on <date>", helpline/website text and ` +
+          `the Aadhaar number. The English block usually begins with the holder's name or a C/O line — DROP that leading name ` +
+          `(it is not part of the address) unless it is a "C/O, S/O, D/O, W/O <name>" line, which you keep. Then copy the rest ` +
+          `in reading order, joined into one line with ", " (flat/house no, building, society/chawl, street/marg/road, landmark ` +
+          `such as "Opposite …", locality, "PO: …", "DIST: …", city/sub-district, state, 6-digit PIN). Keep abbreviations and ` +
+          `numbers exactly as printed (e.g. "CHSL", "Smt", "Flat no 413", "G4", "PO:Apna Bazar", "DIST:Thane"). The PIN must ` +
+          `be exactly 6 digits, copied from the last line. Digits are easily misread when rotated — double-check house/flat ` +
+          `numbers and the PIN. ` +
           `Extract a flat JSON object with exactly these keys: ${JSON.stringify(schema)}. ` +
           `"applicantName" = full name on the ID. "pan" = PAN number if visible. "applicantAddress" = full postal address ` +
           `if visible on any of the documents (Aadhaar is the most likely source). ` +
