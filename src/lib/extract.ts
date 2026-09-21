@@ -1,9 +1,16 @@
+import { compressFiles } from "./compressFiles";
+
 export async function extractDetails(
   files: File[],
   promptText: string,
   pastedText: string
 ): Promise<Record<string, string>> {
   const fd = new FormData();
+  try {
+    files = await compressFiles(files);
+  } catch (e) {
+    console.warn("Client-side compression failed, sending originals:", e);
+  }
   files.forEach((f) => fd.append("files", f, f.name));
   if (pastedText && pastedText.trim()) {
     fd.append("pastedText", pastedText.trim());
