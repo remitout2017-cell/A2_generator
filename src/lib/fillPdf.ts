@@ -122,6 +122,7 @@ export async function fillA2Pdf(values: FormData, dbg: string[]): Promise<Uint8A
   const extras: string[] = [];
   if (values.applicationNumber) extras.push("Application No: " + values.applicationNumber);
   if (values.studentNameOnLetter) extras.push("Student: " + values.studentNameOnLetter);
+  if (values.additionalReferences) extras.push(values.additionalReferences);
   if (extras.length) {
     try {
       const af = form.getTextField("Additional details");
