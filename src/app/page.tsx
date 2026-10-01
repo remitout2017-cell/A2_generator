@@ -135,7 +135,7 @@ export default function Home() {
         "courseOfStudy",
         "applicationNumber",
         "studentNameOnLetter",
-        "additionalReferences",
+        "additionalInfo",
         "amount",
       ];
       const parsed = await extractDetails(
@@ -155,7 +155,7 @@ export default function Home() {
           `"accountIban" and "swift" = the account/IBAN number and SWIFT/BIC code. "routingCode" = any BSB/sort/routing/transit code, ` +
           `or "N/A" if a document explicitly says so. "universityName"/"courseOfStudy" = if mentioned anywhere. "applicationNumber" = any ` +
           `application/reference/mandate number tied to the student. "studentNameOnLetter" = the student's name as it appears in the documents. ` +
-          `"additionalReferences" = every word or number that is highlighted (marker/colour highlight, bold, underline, box, circle) ` +
+          `"additionalInfo" = any extra information worth noting on the form — in particular every word or number that is highlighted (marker/colour highlight, bold, underline, box, circle) ` +
           `or explicitly labelled as a reference, referral, reference no., ref., Ihr Zeichen, Verwendungszweck, matriculation, ` +
           `student ID, invoice, mandate or payment-reference number — in ANY of the documents. Include the label with each value ` +
           `(e.g. "Ref: 123456") and join multiple items with " | ". Do not repeat the value already given in "applicationNumber". ` +

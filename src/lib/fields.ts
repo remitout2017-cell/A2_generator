@@ -57,7 +57,7 @@ export const BENEFICIARY_FIELDS: Field[] = [
   { key: "courseOfStudy", label: "Course of study", group: "beneficiary", pdf: ["Course of StudyEducation"] },
   { key: "applicationNumber", label: "Application number", group: "beneficiary" },
   { key: "studentNameOnLetter", label: "Student name (on letter)", group: "beneficiary" },
-  { key: "additionalReferences", label: "Reference / referral numbers (highlighted)", group: "beneficiary" },
+  { key: "additionalInfo", label: "Additional info (reference / referral no., etc.)", group: "beneficiary" },
 ];
 
 export const ALL_FIELDS: Field[] = [...APPLICANT_FIELDS, ...AMOUNT_FIELDS, ...BENEFICIARY_FIELDS];
