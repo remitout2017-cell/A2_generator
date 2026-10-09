@@ -1,4 +1,4 @@
-import { PDFDocument, StandardFonts, rgb, type PDFFont } from "pdf-lib";
+import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFTextField } from "pdf-lib";
 import { ALL_FIELDS, type FormData } from "./fields";
 
 // Shrinks font size (down to minSize) so `text` fits within maxWidth at the given font.
@@ -8,6 +8,16 @@ function fitFontSize(font: PDFFont, text: string, maxWidth: number, maxSize: num
     size -= 0.5;
   }
   return size;
+}
+
+// Fixed-size text: stays on one line if it fits the box, otherwise wraps onto the next
+// line(s) (multiline) without shrinking the font.
+function setWrappedText(tf: PDFTextField, font: PDFFont, text: string, size = 8) {
+  const widget = tf.acroField.getWidgets()[0];
+  const boxWidth = widget ? widget.getRectangle().width : 0;
+  if (boxWidth && font.widthOfTextAtSize(text, size) > boxWidth - 4) tf.enableMultiline();
+  tf.setText(text);
+  tf.setFontSize(size);
 }
 
 const PURPOSE_CHECKBOX: Record<string, string> = {
@@ -59,17 +69,9 @@ export async function fillA2Pdf(values: FormData, dbg: string[]): Promise<Uint8A
         const tf = form.getTextField(pdfName);
         const text = values[f.key] || "";
         tf.setText(text);
-        // Uniform 8pt across the form so filled values look consistent rather than
-        // each field auto-sizing to its own box, but shrunk further when the value is
-        // too long for its box (e.g. a long name/address) so it never overflows.
-        // "Name of University" is a physically narrow box, so it always auto-sizes.
-        if (pdfName === "Name of University") {
-          tf.setFontSize(0);
-        } else {
-          const widget = tf.acroField.getWidgets()[0];
-          const boxWidth = widget ? widget.getRectangle().width : 0;
-          tf.setFontSize(boxWidth ? fitFontSize(bodyFont, text, boxWidth - 4, 8) : 8);
-        }
+        // Uniform 8pt across the form; values too long for one line wrap onto the next
+        // line instead of shrinking.
+        setWrappedText(tf, bodyFont, text);
         tf.updateAppearances(bodyFont);
       } catch (e) {
         dbg.push("FAILED to set '" + pdfName + "': " + (e as Error).message);
@@ -79,7 +81,7 @@ export async function fillA2Pdf(values: FormData, dbg: string[]): Promise<Uint8A
 
   // relationship label -> concise value on the PDF
   if (values.relationship) {
-    const relText = values.relationship === "Student (Self)" ? "Self" : values.relationship;
+    const relText = values.relationship;
     try {
       const rf = form.getTextField("n Relationship");
       rf.setText(relText);
@@ -126,8 +128,7 @@ export async function fillA2Pdf(values: FormData, dbg: string[]): Promise<Uint8A
   if (extras.length) {
     try {
       const af = form.getTextField("Additional details");
-      af.setText(extras.join("  |  "));
-      af.setFontSize(8);
+      setWrappedText(af, bodyFont, extras.join("  |  "));
       af.updateAppearances(bodyFont);
     } catch {
       // ignore

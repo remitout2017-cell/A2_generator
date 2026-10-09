@@ -20,8 +20,8 @@ export const APPLICANT_FIELDS: Field[] = [
     label: "Relationship to student",
     group: "applicant",
     type: "select",
-    options: ["Student (Self)", "Father", "Mother", "Son", "Daughter", "Spouse", "Sibling", "Other relative"],
-    default: "Student (Self)",
+    options: ["Student", "Father", "Mother", "Husband", "Son", "Daughter", "Spouse", "Sibling", "Other relative"],
+    default: "Student",
     pdf: ["n Relationship"],
   },
 ];

@@ -76,8 +76,8 @@ export default function Home() {
           `guess, autocomplete, or substitute a locality/street/PIN-area name that seems plausible for that PIN code — ` +
           `if a line is blurry or unreadable, omit it rather than filling in a plausible-sounding replacement. Every ` +
           `word you output for this field must be traceable to visible printed text in the image. ` +
-          `"relationship" = "Student (Self)" if this document belongs to the student, or the relation to the student if it's ` +
-          `a family member's document and that's stated/inferable (e.g. "Father", "Mother") — otherwise leave "". ` +
+          `"relationship" = "Student" if this document belongs to the student, or the relation to the student if it's ` +
+          `a family member's document and that's stated/inferable (e.g. "Father", "Mother", "Husband") — otherwise leave "". ` +
           `The image may be scanned or photographed sideways, upside-down (rotated 90°, 180°, or 270°), or crooked/tilted ` +
           `at an arbitrary angle (e.g. a handheld photo of the card at a slant, not aligned to the frame) — mentally ` +
           `rotate and straighten it before reading, and extract every field (including "pan") correctly regardless of ` +
